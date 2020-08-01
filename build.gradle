@@ -1,0 +1,23 @@
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.0.1'
+        classpath("com.tencent.tinker:tinker-patch-gradle-plugin:${TINKER_VERSION}")
+    }
+
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        jcenter()
+        google()
+    }
+}
+
+
