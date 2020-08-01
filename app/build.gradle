@@ -138,11 +138,11 @@ ext {
 
     //for normal build
     //old apk file to build patch apk
-    tinkerOldApkPath = "${bakPath}/app-debug-0801-17-24-49.apk"
+    tinkerOldApkPath = "${bakPath}/app-release-0801-17-48-52.apk"
     //proguard mapping file to build patch apk
-    tinkerApplyMappingPath = "${bakPath}/app-debug-0801-11-21-19-mapping.txt"
+    tinkerApplyMappingPath = "${bakPath}/app-release-0801-17-48-52-mapping.txt"
     //resource R.txt to build patch apk, must input if there is resource changed
-    tinkerApplyResourcePath = "${bakPath}/app-debug-0801-11-21-19-R.txt"
+    tinkerApplyResourcePath = "${bakPath}/app-release-0801-17-48-52-R.txt"
 
     //only use for build all flavor, if not, just ignore this field
     tinkerBuildFlavorDirectory = "${bakPath}/app-0801-11-21-19"
@@ -375,7 +375,7 @@ if (buildWithTinker()) {
              * optional，default '7za'
              * the 7zip artifact path, it will use the right 7za with your platform
              */
-            zipArtifact = "com.tencent.mm:SevenZip:1.2.17"
+            zipArtifact = "com.tencent.mm:SevenZip:1.2.18"
             /**
              * optional，default '7za'
              * you can specify the 7za path yourself, it will overwrite the zipArtifact value
