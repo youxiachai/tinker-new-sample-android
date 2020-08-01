@@ -21,3 +21,13 @@ dependencies {
 
 ```
 
+## FAQ
+
+build: tinkerPatch throw
+```
+Caused by: com.tencent.tinker.android.dex.DexException: Unexpected magic: [100, 101, 120, 10, 48, 51, 56, 0]
+```
+
+check bakApk `*.apk` not from use AS `Run` button beacuase tinker not support `Apply Changes`
+
+use `Make Project` and Manual install then run `tinkerPatch`
