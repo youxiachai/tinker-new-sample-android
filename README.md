@@ -40,7 +40,8 @@ compileOnly("com.tencent.tinker:tinker-android-anno-support:${TINKER_VERSION}")
 ```
 
 change 
+
 ```groovy
-annotationProcessor("com.tencent.tinker:tinker-android-anno-support:${TINKER_VERSION}")
+annotationProcessor("com.tencent.tinker:tinker-android-anno:${TINKER_VERSION}")
 api("com.tencent.tinker:tinker-android-anno-support:${TINKER_VERSION}")
 ```
