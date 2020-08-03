@@ -45,3 +45,16 @@ change
 annotationProcessor("com.tencent.tinker:tinker-android-anno:${TINKER_VERSION}")
 api("com.tencent.tinker:tinker-android-anno-support:${TINKER_VERSION}")
 ```
+
+## Warning:ignoreWarning is false, but we found loader classes are found in old secondary dex. Found classes
+
+add two value 
+
+```groovy
+tinkerPatch {
+    //from 1.9.14.5
+    allowLoaderInAnyDex = true
+    removeLoaderForAllDex = true
+}
+```
+
