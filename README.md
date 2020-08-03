@@ -14,7 +14,7 @@ some issue change annotationProcessor will compile error
 dependencies {
     api("com.tencent.tinker:tinker-android-lib:${TINKER_VERSION}")
 
-    //optional, help to generate the final application
+    //for 1.9.14.7 you must add it
     annotationProcessor("com.tencent.tinker:tinker-android-anno:${TINKER_VERSION}")
     compileOnly("com.tencent.tinker:tinker-android-anno-support:${TINKER_VERSION}")
 }
