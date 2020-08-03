@@ -48,7 +48,7 @@ api("com.tencent.tinker:tinker-android-anno-support:${TINKER_VERSION}")
 
 ## Warning:ignoreWarning is false, but we found loader classes are found in old secondary dex. Found classes
 
-add two value 
+for minSdk >= 21 add two value 
 
 ```groovy
 tinkerPatch {
