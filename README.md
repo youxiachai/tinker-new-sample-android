@@ -23,7 +23,7 @@ dependencies {
 
 ## FAQ
 
-build: tinkerPatch throw
+### build: tinkerPatch throw
 ```
 Caused by: com.tencent.tinker.android.dex.DexException: Unexpected magic: [100, 101, 120, 10, 48, 51, 56, 0]
 ```
@@ -31,3 +31,16 @@ Caused by: com.tencent.tinker.android.dex.DexException: Unexpected magic: [100, 
 check bakApk `*.apk` not from use AS `Run` button beacuase tinker not support `Apply Changes`
 
 use `Make Project` and Manual install then run `tinkerPatch`
+
+### error: cannot access Keep
+
+```groovy
+annotationProcessor("com.tencent.tinker:tinker-android-anno:${TINKER_VERSION}")
+compileOnly("com.tencent.tinker:tinker-android-anno-support:${TINKER_VERSION}")
+```
+
+change 
+```groovy
+annotationProcessor("com.tencent.tinker:tinker-android-anno-support:${TINKER_VERSION}")
+api("com.tencent.tinker:tinker-android-anno-support:${TINKER_VERSION}")
+``
