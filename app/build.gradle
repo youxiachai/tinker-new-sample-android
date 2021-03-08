@@ -1,20 +1,18 @@
 apply plugin: 'com.android.application'
 
 dependencies {
-
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.12'
     implementation "androidx.appcompat:appcompat:1.1.0"
     api("com.tencent.tinker:tinker-android-lib:${TINKER_VERSION}")
+
+    // Maven local cannot handle transist dependencies.
+    implementation("com.tencent.tinker:tinker-android-loader:${TINKER_VERSION}")
 
     annotationProcessor("com.tencent.tinker:tinker-android-anno:${TINKER_VERSION}")
     compileOnly("com.tencent.tinker:tinker-android-anno-support:${TINKER_VERSION}")
 
     implementation "androidx.multidex:multidex:2.0.1"
-    //use to test multiDex
-//    implementation group: 'com.google.guava', name: 'guava', version: '19.0'
-//    implementation "org.scala-lang:scala-library:2.11.7"
-
 }
 
 def gitSha() {
@@ -32,8 +30,8 @@ def gitSha() {
 def javaVersion = JavaVersion.VERSION_1_7
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion '29.0.2'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
     compileOptions {
         sourceCompatibility javaVersion
@@ -64,13 +62,13 @@ android {
     defaultConfig {
         applicationId "tinker.sample.android"
         minSdkVersion 14
-        targetSdkVersion 29
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0.0"
         /**
          * you can use multiDex and install it in your ApplicationLifeCycle implement
          */
-        multiDexEnabled true
+        multiDexEnabled false
         multiDexKeepProguard file("tinker_multidexkeep.pro")
         /**
          * buildConfig can change during patch!
@@ -138,14 +136,14 @@ ext {
 
     //for normal build
     //old apk file to build patch apk
-    tinkerOldApkPath = "${bakPath}/app-release-0801-17-48-52.apk"
+    tinkerOldApkPath = "${bakPath}/app-debug-0308-22-02-55.apk"
     //proguard mapping file to build patch apk
-    tinkerApplyMappingPath = "${bakPath}/app-release-0801-17-48-52-mapping.txt"
+    tinkerApplyMappingPath = "${bakPath}/app-debug-0308-22-02-55-R.txt"
     //resource R.txt to build patch apk, must input if there is resource changed
-    tinkerApplyResourcePath = "${bakPath}/app-release-0801-17-48-52-R.txt"
+    tinkerApplyResourcePath = "${bakPath}/app-debug-0308-22-02-55-R.txt"
 
     //only use for build all flavor, if not, just ignore this field
-    tinkerBuildFlavorDirectory = "${bakPath}/app-0801-11-21-19"
+    tinkerBuildFlavorDirectory = "${bakPath}/app-1018-17-32-47"
 }
 
 
@@ -199,11 +197,6 @@ if (buildWithTinker()) {
          * case 5: resources.arsc has changed, but we don't use applyResourceMapping to build
          */
         ignoreWarning = false
-
-        //from 1.9.14.5
-        allowLoaderInAnyDex = true
-
-        removeLoaderForAllDex = true
 
         /**
          * optional，default 'true'
@@ -375,7 +368,7 @@ if (buildWithTinker()) {
              * optional，default '7za'
              * the 7zip artifact path, it will use the right 7za with your platform
              */
-            zipArtifact = "com.tencent.mm:SevenZip:1.2.18"
+            zipArtifact = "com.tencent.mm:SevenZip:1.1.10"
             /**
              * optional，default '7za'
              * you can specify the 7za path yourself, it will overwrite the zipArtifact value
@@ -409,36 +402,51 @@ if (buildWithTinker()) {
                         def newFileNamePrefix = hasFlavors ? "${fileNamePrefix}" : "${fileNamePrefix}-${date}"
 
                         def destPath = hasFlavors ? file("${bakPath}/${project.name}-${date}/${variant.flavorName}") : bakPath
-
-                        if (variant.metaClass.hasProperty(variant, 'packageApplicationProvider')) {
+                        println("destPath $destPath")
+                        def hasValue = variant.metaClass.hasProperty(variant, 'packageApplicationProvider')
+                        println("hasValue $hasValue")
+                        if(hasValue) {
                             def packageAndroidArtifact = variant.packageApplicationProvider.get()
-                            if (packageAndroidArtifact != null) {
-                                try {
-                                    from new File(packageAndroidArtifact.outputDirectory.getAsFile().get(), variant.outputs.first().apkData.outputFileName)
-                                } catch (Exception e) {
-                                    from new File(packageAndroidArtifact.outputDirectory, variant.outputs.first().apkData.outputFileName)
-                                }
-                            } else {
-                                from variant.outputs.first().mainOutputFile.outputFile
-                            }
-                        } else {
-                            from variant.outputs.first().outputFile
+                            println("packageAndroidArtifact $packageAndroidArtifact")
+                            println("packageAndroidArtifact ${packageAndroidArtifact.outputDirectory.getAsFile().get()}")
+                            println("variant.outputs ${variant.outputs.first().outputFileName}")
+                            from new File(packageAndroidArtifact.outputDirectory.getAsFile().get(), variant.outputs.first().outputFileName)
                         }
-
+//                        if (variant.metaClass.hasProperty(variant, 'packageApplicationProvider')) {
+//                            def packageAndroidArtifact = variant.packageApplicationProvider.get()
+//                            println(packageAndroidArtifact)
+//                            println(variant)
+//                            if (packageAndroidArtifact != null) {
+//                                try {
+//                                    from new File(packageAndroidArtifact.outputDirectory.getAsFile().get(), variant.outputs.first().apkData.outputFileName)
+//                                } catch (Exception e) {
+//                                    from new File(packageAndroidArtifact.outputDirectory, variant.outputs.first().apkData.outputFileName)
+//                                }
+//                            } else {
+//                                from variant.outputs.first().mainOutputFile.outputFile
+//                            }
+//                        } else {
+//                            from variant.outputs.first().outputFile
+//                        }
+//
                         into destPath
                         rename { String fileName ->
                             fileName.replace("${fileNamePrefix}.apk", "${newFileNamePrefix}.apk")
                         }
 
-                        from "${buildDir}/outputs/mapping/${variant.dirName}/mapping.txt"
+                        def dirName = variant.dirName
+                        if (hasFlavors) {
+                            dirName = taskName
+                        }
+                        from "${buildDir}/outputs/mapping/${dirName}/mapping.txt"
                         into destPath
                         rename { String fileName ->
                             fileName.replace("mapping.txt", "${newFileNamePrefix}-mapping.txt")
                         }
 
-                        from "${buildDir}/intermediates/symbols/${variant.dirName}/R.txt"
-                        from "${buildDir}/intermediates/symbol_list/${variant.dirName}/R.txt"
-                        from "${buildDir}/intermediates/runtime_symbol_list/${variant.dirName}/R.txt"
+                        from "${buildDir}/intermediates/symbols/${dirName}/R.txt"
+                        from "${buildDir}/intermediates/symbol_list/${dirName}/R.txt"
+                        from "${buildDir}/intermediates/runtime_symbol_list/${dirName}/R.txt"
                         into destPath
                         rename { String fileName ->
                             fileName.replace("R.txt", "${newFileNamePrefix}-R.txt")
@@ -488,6 +496,7 @@ if (buildWithTinker()) {
         }
     }
 }
+
 
 
 task sortPublicTxt() {

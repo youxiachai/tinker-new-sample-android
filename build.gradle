@@ -6,7 +6,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.1'
+        classpath 'com.android.tools.build:gradle:4.1.2'
         classpath("com.tencent.tinker:tinker-patch-gradle-plugin:${TINKER_VERSION}")
     }
 
@@ -18,6 +18,10 @@ allprojects {
         jcenter()
         google()
     }
+}
+
+def is_gradle_3() {
+    return hasProperty('GRADLE_3') && GRADLE_3.equalsIgnoreCase('TRUE')
 }
 
 
